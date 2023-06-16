@@ -1,5 +1,25 @@
+import numpy as np
+
+
+def enumerate_mandelbrot_set(C, max_iters):
+    """
+    This function calculates mandebrot for each element in C
+    :param C: A 2D array of complex numbers
+    :return: A 2D array of the number of iterations it took to escape
+    """
+    shape = C.shape
+    MandelbrotSet = np.zeros((shape[0], shape[1]))
+
+    for i, c in enumerate(C):
+        for j, c in enumerate(C[i]):
+            print(c)
+            MandelbrotSet[i][j] = calculate_mandelbrot_naive(c, max_iters)
+
+    return MandelbrotSet
+
+
 # This function is the naive implementation of the Mandelbrot set
-def mandelbrot_naive(c, max_iters):
+def calculate_mandelbrot_naive(c, max_iters):
     """
     This function is the naive implementation of the Mandelbrot set
     :param c: The complex number to check
@@ -19,4 +39,4 @@ def mandelbrot_naive(c, max_iters):
             return (i + 1) / max_iters
 
     # If z has not escaped, return the maximum number of iterations
-    return max_iters
+    return 1
