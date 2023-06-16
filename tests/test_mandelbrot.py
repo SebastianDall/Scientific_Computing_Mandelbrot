@@ -3,6 +3,7 @@ from mandelbrot.mandelbrot import (
     calculate_mandelbrot_naive,
     enumerate_mandelbrot_set,
     calculate_mandelbrot_vectorized,
+    calculate_mandelbrot_naive_with_numba,
 )
 
 
@@ -27,7 +28,8 @@ def test_enumerate_mandelbrot_set():
     C = np.array([[-2 + 1j, -2 + 1j], [-2 + 1j, -2 + 1j]])
 
     assert np.array_equal(
-        enumerate_mandelbrot_set(C, 100), np.array([[0.01, 0.01], [0.01, 0.01]])
+        enumerate_mandelbrot_set(C, 100, calculate_mandelbrot_naive),
+        np.array([[0.01, 0.01], [0.01, 0.01]]),
     )
 
 
@@ -43,3 +45,13 @@ def test_mandelbrot_vectorized():
     assert np.array_equal(
         calculate_mandelbrot_vectorized(C, 100), np.array([[0.01, 0.01], [0.01, 0.01]])
     )
+
+
+def test_mandelbrot_numba_naive():
+    """
+    GIVEN a normal and a complex number
+    WHEN the naive implementation is used
+    THEN one result should be 100 and the other should be 0.02
+    """
+    assert calculate_mandelbrot_naive_with_numba(0, 100) == 1
+    assert calculate_mandelbrot_naive_with_numba(-2 + 1j, 100) == 0.01
