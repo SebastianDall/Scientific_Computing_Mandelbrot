@@ -1,5 +1,9 @@
 import numpy as np
-from mandelbrot.mandelbrot import calculate_mandelbrot_naive, enumerate_mandelbrot_set
+from mandelbrot.mandelbrot import (
+    calculate_mandelbrot_naive,
+    enumerate_mandelbrot_set,
+    calculate_mandelbrot_vectorized,
+)
 
 
 # Test the naive implementation
@@ -24,4 +28,18 @@ def test_enumerate_mandelbrot_set():
 
     assert np.array_equal(
         enumerate_mandelbrot_set(C, 100), np.array([[0.01, 0.01], [0.01, 0.01]])
+    )
+
+
+# Test the vectorized implementation
+def test_mandelbrot_vectorized():
+    """
+    GIVEN a 2D array of complex numbers
+    WHEN the vectorized implementation is used
+    THEN the result should be a 2D array of the number of iterations it took to escape
+    """
+    C = np.array([[-2 + 1j, -2 + 1j], [-2 + 1j, -2 + 1j]])
+
+    assert np.array_equal(
+        calculate_mandelbrot_vectorized(C, 100), np.array([[0.01, 0.01], [0.01, 0.01]])
     )
