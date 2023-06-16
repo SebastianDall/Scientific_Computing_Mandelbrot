@@ -1,4 +1,5 @@
 import numpy as np
+from numba import jit
 
 
 def enumerate_mandelbrot_set(C, max_iters):
@@ -18,6 +19,7 @@ def enumerate_mandelbrot_set(C, max_iters):
 
 
 # This function is the naive implementation of the Mandelbrot set
+@jit(nopython=True)
 def calculate_mandelbrot_naive(c, max_iters):
     """
     This function is the naive implementation of the Mandelbrot set
@@ -58,17 +60,18 @@ def calculate_mandelbrot_vectorized(C, max_iters):
 
     # Iterate until the maximum number of iterations is reached
     for i in range(max_iters):
-        # Calculate the next value of z
-        z = z**2 + C
+        # Calculate the next value of z only for those elements where z has not escaped yet
+        mask = ~escaped
+        z[mask] = z[mask] ** 2 + C[mask]
 
         # Check if z has escaped
-        z_abs = np.abs(z)
-        escaped_this_iter = z_abs >= 2
+        escaped_this_iter = np.abs(z) >= 2
 
         # Update the mandelbrot set
         mandelbrotSet = np.where(
             escaped_this_iter & ~escaped, (i + 1) / max_iters, mandelbrotSet
         )
+        # Update the escaped array
         escaped = escaped | escaped_this_iter
 
     mandelbrotSet = np.where(mandelbrotSet == 0, 1, mandelbrotSet)
