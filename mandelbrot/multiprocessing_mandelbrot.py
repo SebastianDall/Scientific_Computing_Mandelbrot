@@ -23,7 +23,7 @@ def calculate_mandelbrot_multithreaded(C, max_iters, cpus):
 
     # create the pool
     if cpus not in range(1, multiprocessing.cpu_count() + 1):
-        raise ValueError(f"cpus must be in {range(1, multiprocessing.cpu_count() + 1)}")
+        raise ValueError(f"cpus must be in 1 to {multiprocessing.cpu_count()}")
 
     pool = multiprocessing.Pool(cpus)
 

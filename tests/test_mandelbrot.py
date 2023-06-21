@@ -1,4 +1,6 @@
 import numpy as np
+import pytest
+import multiprocessing
 from mandelbrot.mandelbrot import (
     calculate_mandelbrot_naive,
     enumerate_mandelbrot_set,
@@ -71,3 +73,8 @@ def test_mandelbrot_multithreaded():
         calculate_mandelbrot_multithreaded(C, 100, 1),
         np.array([[0.01, 0.01], [0.01, 0.01]]),
     )
+
+    # assert error is raised when num_threads is more less than 1
+    cpus_range = multiprocessing.cpu_count()
+    with pytest.raises(ValueError, match=rf"cpus must be in 1 to {cpus_range}"):
+        calculate_mandelbrot_multithreaded(C, 100, 0)
