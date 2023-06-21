@@ -5,6 +5,7 @@ from mandelbrot.mandelbrot import (
     calculate_mandelbrot_vectorized,
     calculate_mandelbrot_naive_with_numba,
 )
+from mandelbrot.multiprocessing_mandelbrot import calculate_mandelbrot_multithreaded
 
 
 # Test the naive implementation
@@ -55,3 +56,18 @@ def test_mandelbrot_numba_naive():
     """
     assert calculate_mandelbrot_naive_with_numba(0, 100) == 1
     assert calculate_mandelbrot_naive_with_numba(-2 + 1j, 100) == 0.01
+
+
+def test_mandelbrot_multithreaded():
+    """
+    GIVEN a 2D array of complex numbers
+    WHEN the multithreaded implementation is used
+    THEN the result should be a 2D array of the number of iterations it took to escape
+    """
+
+    C = np.array([[-2 + 1j, -2 + 1j], [-2 + 1j, -2 + 1j]])
+
+    assert np.array_equal(
+        calculate_mandelbrot_multithreaded(C, 100, 1),
+        np.array([[0.01, 0.01], [0.01, 0.01]]),
+    )
