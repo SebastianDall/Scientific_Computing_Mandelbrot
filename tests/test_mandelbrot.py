@@ -5,6 +5,7 @@ from mandelbrot.mandelbrot import (
     calculate_mandelbrot_naive,
     enumerate_mandelbrot_set,
     calculate_mandelbrot_vectorized,
+    calculate_mandelbrot_vectorized_optim,
     calculate_mandelbrot_naive_with_numba,
 )
 from mandelbrot.multiprocessing_mandelbrot import calculate_mandelbrot_multithreaded
@@ -43,10 +44,25 @@ def test_mandelbrot_vectorized():
     WHEN the vectorized implementation is used
     THEN the result should be a 2D array of the number of iterations it took to escape
     """
-    C = np.array([[-2 + 1j, -2 + 1j], [-2 + 1j, -2 + 1j]])
+    C = np.array([[-2 + 1j, -2 + 1j, 0 - 0.5j], [-2 + 1j, -2 + 1j, 0 + 0.5j]])
 
     assert np.array_equal(
-        calculate_mandelbrot_vectorized(C, 100), np.array([[0.01, 0.01], [0.01, 0.01]])
+        calculate_mandelbrot_vectorized(C, 100),
+        np.array([[0.01, 0.01, 1], [0.01, 0.01, 1]]),
+    )
+
+
+def test_mandelbrot_vectorized_optim():
+    """
+    GIVEN a 2D array of complex numbers
+    WHEN the vectorized implementation is used
+    THEN the result should be a 2D array of the number of iterations it took to escape
+    """
+    C = np.array([[-2 + 1j, -2 + 1j, 0 - 0.5j], [-2 + 1j, -2 + 1j, 0 + 0.5j]])
+
+    assert np.array_equal(
+        calculate_mandelbrot_vectorized_optim(C, 100),
+        np.array([[0.01, 0.01, 1], [0.01, 0.01, 1]]),
     )
 
 
