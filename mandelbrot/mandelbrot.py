@@ -18,7 +18,6 @@ except:
         return inner
 
 
-@profile
 def enumerate_mandelbrot_set(
     C: np.ndarray,
     max_iters: int,
@@ -142,6 +141,7 @@ def calculate_mandelbrot_vectorized(C: np.ndarray, max_iters: int = 100) -> np.n
     return mandelbrotSet
 
 
+@profile
 def calculate_mandelbrot_vectorized_optim(
     C: np.ndarray, max_iters: int = 100
 ) -> np.ndarray:
