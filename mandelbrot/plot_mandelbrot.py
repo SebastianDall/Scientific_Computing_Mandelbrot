@@ -13,5 +13,6 @@ def plot_mandelbrot(M, extent=None):
         raise ValueError("extent must be specified")
 
     plt.imshow(M, extent=extent)
+    plt.set_cmap("hot")
     plt.colorbar()
     plt.show()
