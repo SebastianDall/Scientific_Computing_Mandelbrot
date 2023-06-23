@@ -1,5 +1,10 @@
 import numpy as np
 import h5py
+import os
+
+if not os.path.exists("./data"):
+    os.makedirs("./data")
+
 
 # Create an array of complex numbers
 pre = 5000
@@ -17,6 +22,6 @@ R, I = np.meshgrid(R, I)
 
 C = R + I
 
-h5py_file = h5py.File("../data/mandelbrot.hdf5", "w")
+h5py_file = h5py.File("./data/mandelbrot.hdf5", "w")
 h5py_file.create_dataset("C", data=C)
 h5py_file.close()

@@ -22,10 +22,11 @@ max_iterations = 100
 
 # Define your functions and arguments
 functions = [
-    (
-        "naive",
-        lambda: enumerate_mandelbrot_set(C, max_iterations, calculate_mandelbrot_naive),
-    ),
+    # (
+    #     "naive",
+    #     lambda: enumerate_mandelbrot_set(C, max_iterations, calculate_mandelbrot_naive),
+    # ),
+    ("naive", lambda: calculate_mandelbrot_naive(0 + 0.5j, max_iterations)),
     ("vectorized", lambda: calculate_mandelbrot_vectorized(C, max_iterations)),
     (
         "vectorized - optim",

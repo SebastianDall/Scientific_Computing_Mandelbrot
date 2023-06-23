@@ -1,14 +1,71 @@
 # Scientific Computing using Python – High Performance Computing in Python (2023)
 
+This repository contains the code and documentation for calculating the Mandelbrot set as part of the course Scientific Computing using Python – High Performance Computing in Python at Aalborg University. The code is implemented in Python 3.11.3 using anaconda 1.11.2. All code considerations and results can be found at the [assignment](#assignment-the-mandelbrot-set). 
+
+## Installation
+All code was developed in a docker container and vscode. To create all the figures and files for running the code, simply run the following command:
+
+```bash
+docker run -it --rm -f docker/Dockerfile -v ${PWD}:/workspaces/scientific_computing_in_python -w /workspaces/scientific_computing_in_python continuumio/anaconda3:2021.11 /bin/bash -c "pytest && python3 project.py"
+```
+
+Alternatively, the code can be run locally with [anaconda](https://www.anaconda.com/). Firstly, to recreate the environment, run the following command:
+
+```bash
+conda env create -f docker/environment.yml
+```
+
+Then activate the environment with:
+
+```bash
+conda activate scip_2
+```
+
+Finally, run the following command to create all the figures and files for running the code:
+
+```bash
+pytest && python3 project.py
+```
 
 
 
+# Assignment: The Mandelbrot set
+## The Mandelbrot set
+The Mandelbrot set is a set of complex numbers defined by a simple iterative algorithm: for a given complex number 'c', start with 'z' equal to zero and repeatedly compute the next 'z' as the previous 'z' squared plus 'c'. If the magnitude of 'z' never exceeds 2 even after many iterations, 'c' is in the Mandelbrot set. A pseudo code implementation of this algorithm can be seen below.
+
+```python
+1: def M(c):
+2:    z = 0
+3:    for i in range(max_iters):
+4:        z = z**2 + c
+5:        if abs(z) > 2:
+6:            return (i + 1) / max_iters
+7:    return max_iters
+```    
+
+
+The boundary of this set exhibits intricate, self-similar patterns known as fractals. A visual example of the Mandelbrot set can be seen below.
+
+<p align = "center">
+<img src = "figures/mandelbrotplot.png">
+</p>
+<p align = "center">
+Fig.1 - A plot of the Mandelbrot set colored by a logarithmic scale of the number of iterations it took to escape.
+</p>
+
+## Assignment
+In this project we have been tasked with implementing the Mandelbrot set in Python in differnet configurations and test the computational requirements. These configurations are:
+1. A naive implementation of the Mandelbrot set.
+2. A vectorized, numba, cython, or f2py implementation of the Mandelbrot set.
+3. A multiprocessing implementation of the Mandelbrot set.
 
 
 ## Software Design and Considerations
-This section underlines the key considerations about the software design and implementation. The software is implemented in Python 3.8. The software is designed to be used as a module. No classes were implemented in this project, instead all functionality is implemented as functions. All necessary functionality for calculating the mandelbrot set is implemented in the `mandelbrot` module. The module contains the following:
+This section underlines the key considerations about the software design and implementation. The software is implemented in Python 3.11.3 and is designed to be used as a module. No classes were implemented in this project, instead all functionality is implemented as functions. All necessary functionality for calculating the mandelbrot set is implemented in the `mandelbrot` module. The module contains the following:
 - `mandelbrot.py`: Contains the main function for calculating the mandelbrot set.
 - `mandelbrot_multiprocessing.py`: Contains a function for calculating the mandelbrot set using multiprocessing.
+- `benchmark.py`: Contains a function for benchmarking the different implementations of the mandelbrot set.
+
 
 The `mandelbrot` module is documented using docstrings. The docstrings are formatted according to the [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings). The docstrings can be viewed using the `help` function in Python. E.g. `help(mandelbrot.calculate_mandelbrot_set)`.
 
@@ -40,10 +97,10 @@ pytest
 ```
 
 ## Performance and optimization
-The `src/profile.py` will run a profile of functions in the `mandelbrot` module with the `kernprof -l -v src/profile.py` command.   
+The `src/profile.py` will run a profile of functions in the `mandelbrot` module with the `kernprof -l -v src/profile.py` command. The output for profiling the `calculate_mandebrot_naive` and `calculate_mandelbrot_vectorized` functions can be seen below. For the naive implementation most of the compute time is taken up by the for loop, calculating the next value of z, and determining if z has escaped. Combined these make up 98.5 % of the execution time. In the vectorized implementation 63 % of the compute time is at this step: `escaped_this_iter = np.abs(z) >= 2` - checking if the value of z has escaped. Calculating the whole Mandelbrot set with the vectorized implementation takes 36 seconds on my system. Let's see if we can optimize this further.
 
 ```
-Total time: 391.049 s
+Total time: 0.00010028 s
 File: /workspaces/scientific_computing_in_python/Scientific_Computing_Mandelbrot/mandelbrot/mandelbrot.py
 Function: calculate_mandelbrot_naive at line 60
 
@@ -72,19 +129,19 @@ Line #      Hits         Time  Per Hit   % Time  Line Contents
     80                                           
     81                                               """
     82                                               # Initialize z and c
-    83  25000000    3234580.7      0.1      0.8      z = 0
+    83         1          1.0      1.0      1.0      z = 0
     84                                           
     85                                               # Iterate until the maximum number of iterations is reached
-    86 524452924   81548704.1      0.2     20.9      for i in range(max_iters):
+    86       100         37.4      0.4     37.3      for i in range(max_iters):
     87                                                   # Calculate the next value of z
-    88 524452924  147446648.4      0.3     37.7          z = z**2 + c
+    88       100         28.3      0.3     28.2          z = z**2 + c
     89                                           
     90                                                   # Check if z has escaped
-    91 503747230  153278314.6      0.3     39.2          if abs(z) > 2:
-    92  20705694    4908624.0      0.2      1.3              return (i + 1) / max_iters
+    91       100         33.2      0.3     33.1          if abs(z) > 2:
+    92                                                       return (i + 1) / max_iters
     93                                           
     94                                               # If z has not escaped, return the maximum number of iterations
-    95   4294306     632337.2      0.1      0.2      return 1
+    95         1          0.2      0.2      0.2      return 1
 ```
 
 ```
@@ -138,6 +195,11 @@ Line #      Hits         Time  Per Hit   % Time  Line Contents
    141         1      52151.8  52151.8      0.1      mandelbrotSet = np.where(mandelbrotSet == 0, 1, mandelbrotSet)
    142         1          0.4      0.4      0.0      return mandelbrotSet
 ```
+
+The absolute value or modulus of a complex number is defined by the formula: `|a + bi| = sqrt(a^2 + b^2)`. This is a complex calculation as it involves a square root. However, we can get rid of the square root computation by squaring the real and imaginary part, thereby `abs(z) >= 2 == (z.real**2 + z.imag**2) >= 4`. This is a much simpler calculation. Lets see if this reduces the computational time? - ofcourse we also test the new version to test if it is correct.
+
+With this implementation the calculation time is reduced to 25.4289 s. This is a 30% improvement over the previous version.
+
 
 
 ```
