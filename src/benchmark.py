@@ -44,7 +44,9 @@ functions = [
     ),
     (
         "vectorized - multiprocessing, 12 threads",
-        lambda: calculate_mandelbrot_multithreaded(C, max_iterations, 12),
+        lambda: calculate_mandelbrot_multithreaded(
+            C, max_iterations, multiprocessing.cpu_count()
+        ),
     ),
 ]
 
