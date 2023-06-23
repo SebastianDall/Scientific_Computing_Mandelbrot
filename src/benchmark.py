@@ -74,34 +74,35 @@ plt.xlabel("Function")
 plt.xticks(rotation=90)
 plt.ylabel("Time (s)")
 plt.title("Execution Time Comparison")
+plt.tight_layout()  # Make sure labels are not cut off
 plt.savefig("figures/functions_benchmark.png")
 
 
-functions = [
-    (
-        i,
-        lambda i=i: calculate_mandelbrot_multithreaded(C, max_iterations, i),
-    )
-    for i in range(1, int(multiprocessing.cpu_count() / 2 + 1))
-]
+# functions = [
+#     (
+#         i,
+#         lambda i=i: calculate_mandelbrot_multithreaded(C, max_iterations, i),
+#     )
+#     for i in range(1, int(multiprocessing.cpu_count() / 2 + 1))
+# ]
 
 
-# Measure execution time for each function
-threadsBenchmark = benchmark_functions(functions)
+# # Measure execution time for each function
+# threadsBenchmark = benchmark_functions(functions)
 
 
-# Create a line, dot plot of the results
-plt.figure()
-plt.plot(
-    [i[0] for i in threadsBenchmark],
-    [i[1] for i in threadsBenchmark],
-    "o-",
-    color="steelblue",
-)
-plt.xlabel("Number of threads")
-plt.ylabel("Time (s)")
-plt.title("Execution Time Comparison")
-plt.savefig("figures/computational_speedup_5000x5000.png")
+# # Create a line, dot plot of the results
+# plt.figure()
+# plt.plot(
+#     [i[0] for i in threadsBenchmark],
+#     [i[1] for i in threadsBenchmark],
+#     "o-",
+#     color="steelblue",
+# )
+# plt.xlabel("Number of threads")
+# plt.ylabel("Time (s)")
+# plt.title("Execution Time Comparison")
+# plt.savefig("figures/computational_speedup_5000x5000.png")
 
 
 # Test multithreading with 1 to 6 threads using a bigger dataset.
@@ -109,14 +110,18 @@ plt.savefig("figures/computational_speedup_5000x5000.png")
 h5py_file = h5py.File("data/mandelbrot.hdf5", "r")
 C = h5py_file["C_15000_15000"][:]
 h5py_file.close()
-
+print(
+    "Starting benchmark with C = {}x{} and {} iterations".format(
+        C.shape[0], C.shape[1], max_iterations
+    )
+)
 
 functions = [
     (
         i,
         lambda i=i: calculate_mandelbrot_multithreaded(C, max_iterations, i),
     )
-    for i in range(1, int(multiprocessing.cpu_count() / 2 + 1))
+    for i in range(4, int(multiprocessing.cpu_count() / 2 + 1))
 ]
 
 threadsBenchmark_big = benchmark_functions(functions)
@@ -129,5 +134,6 @@ plt.plot(
 )
 plt.xlabel("Number of threads")
 plt.ylabel("Time (s)")
+plt.ylim(0, 130)
 plt.title("Execution Time Comparison")
 plt.savefig("figures/computational_speedup_15000x15000.png")
