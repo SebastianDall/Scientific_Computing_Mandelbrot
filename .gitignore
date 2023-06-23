@@ -5,7 +5,7 @@ __pycache__/
 *.hdf5
 # C extensions
 *.so
-
+*.lprof
 # Distribution / packaging
 .Python
 build/
