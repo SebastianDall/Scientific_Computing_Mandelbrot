@@ -16,7 +16,7 @@ from mandelbrot.mandelbrot import (
 
 # Load the data
 h5py_file = h5py.File("data/mandelbrot.hdf5", "r")
-C = h5py_file["C"][:]
+C = h5py_file["C_5000_5000"][:]
 h5py_file.close()
 
 max_iterations = 100

@@ -6,6 +6,8 @@ import os
 if os.path.isfile("./data/mandelbrot.hdf5") == False:
     print("Creating dataset...")
     os.system("python3 src/create_dataset.py")
+    os.system("python3 src/create_dataset.py --pre 15000 --pim 15000")
+
 else:
     print("Dataset already exists")
 

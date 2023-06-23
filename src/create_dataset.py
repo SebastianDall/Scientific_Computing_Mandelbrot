@@ -5,10 +5,16 @@ import os
 if not os.path.exists("./data"):
     os.makedirs("./data")
 
+import argparse
+
+parser = argparse.ArgumentParser(description="Create a dataset for the Mandelbrot set")
+parser.add_argument("--pre", type=int, default=5000)
+parser.add_argument("--pim", type=int, default=5000)
 
 # Create an array of complex numbers
-pre = 5000
-pim = 5000
+args = parser.parse_args()
+pre = args.pre
+pim = args.pim
 
 pre_from = -2
 pre_to = 1
@@ -22,6 +28,8 @@ R, I = np.meshgrid(R, I)
 
 C = R + I
 
-h5py_file = h5py.File("./data/mandelbrot.hdf5", "w")
-h5py_file.create_dataset("C", data=C)
-h5py_file.close()
+with h5py.File("./data/mandelbrot.hdf5", "a") as h5py_file:
+    ds_name = f"C_{pre}_{pim}"
+    if ds_name in h5py_file:
+        del h5py_file[ds_name]  # delete the existing dataset
+    h5py_file.create_dataset(ds_name, data=C)  # create the new dataset

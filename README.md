@@ -27,6 +27,13 @@ Finally, run the following command to create all the figures and files for runni
 pytest && python3 project.py
 ```
 
+The `project.py` script will do the following:
+1. Create the dataset for the benchmarking with `src/create_dataset.py`.
+    - Two datasets will be created. One with 5000x5000 complex numbers and one with 15000x15000 complex numbers.
+2. Plot the Mandelbrot set with `src/mandelbrotplot.py`.
+3. Profile three different implementations of the Mandelbrot set with `src/profile.py`.
+4. Benchmark the functions, and compare threads with computational speedup. The benchmarking is done with `src/benchmark.py`.
+    - The benchmarking will be done with the 5000x5000 and 15000x15000 datasets. The results will be saved in the `results` folder. Note the 15000x15000 dataset will take a long time to run and will require about 15 GB of RAM.
 
 
 # Assignment: The Mandelbrot set
@@ -255,3 +262,37 @@ Line #      Hits         Time  Per Hit   % Time  Line Contents
    189         1      56751.4  56751.4      0.2      mandelbrotSet = np.where(mandelbrotSet == 0, 1, mandelbrotSet)
    190         1          0.3      0.3      0.0      return mandelbrotSet
 ```
+
+## Benchmarking
+All functions were benchmarked using the `timeit` module. The benchmarking code is in the `benchmark.py` file. The benchmarking code was run on a ubuntu 22.04 machine with Intel(R) Core(TM) i5-10400T CPU @ 2.00GHz with 6 cores and 24 GB of RAM. The calculations were done on a 5000 x 5000 grid of complex numbers between `Re = [-2, 1]` and `Im = [-1.5, 1.5]` with 100 iterations. The results are shown below:
+
+<p align = "center">
+<img src = "figures/functions_benchmark.png">
+</p>
+<p align = "center">
+Fig.2 - A performance plot of the different implementations for calculating the Mandebrot set.
+</p>
+
+The naive approach is the slowest and the parallelized version was the fastest. Interestingly the version with numba was almost as fast as the parallelized version. Also it can be seen the optimized vectorized version was about ten seconds faster.
+
+### Threads vs Time
+The parallelized version was run with different number of threads to see how the number of threads affects the time taken to calculate the Mandelbrot set. The results are shown below:
+
+<p align = "center">
+<img src = "figures/computational_speedup_5000x5000.png">
+</p>
+<p align = "center">
+Fig.3 - A plot of the computational speedup as a function of the number of threads. 
+</p>
+
+After 4 threads there does not seem to be a significant speed-up. This is likely because the overhead of parallelizing the work between the threads is more than the time saved by parallelizing the work. In theory if the dataset was bigger then the speedup should continue to increase until it reaches 6 threads. Lets test this idea. Below is the result of running 1 to 6 threads on a 15000 x 15000 grid of complex numbers between `Re = [-2, 1]` and `Im = [-1.5, 1.5]` with 100 iterations.
+
+<p align = "center">
+<img src = "figures/computational_speedup_15000x15000.png">
+</p>
+<p align = "center">
+Fig.4 - A plot of the computational speedup as a function of the number of threads on a 15000x15000 dataset. 
+</p>
+
+
+Increasing the dataset size does not give a speedup for 6 threads compared to 4 threads. Therefore, there must be another bottleneck hampering the performance of the parallelized version. 

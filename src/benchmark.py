@@ -19,7 +19,7 @@ from mandelbrot.benchmark import benchmark_functions
 
 
 h5py_file = h5py.File("data/mandelbrot.hdf5", "r")
-C = h5py_file["C"][:]
+C = h5py_file["C_5000_5000"][:]
 h5py_file.close()
 
 max_iterations = 100
@@ -43,7 +43,7 @@ functions = [
         ),
     ),
     (
-        "vectorized - multiprocessing, 12 threads",
+        f"vectorized - multiprocessing, {multiprocessing.cpu_count()} threads",
         lambda: calculate_mandelbrot_multithreaded(
             C, max_iterations, multiprocessing.cpu_count()
         ),
@@ -68,7 +68,7 @@ names, elapsed_times = zip(*times)
 
 
 # Plot the results
-plt.figure(figsize=(10, 6))
+plt.figure()
 plt.bar(names, elapsed_times, color="steelblue")
 plt.xlabel("Function")
 plt.xticks(rotation=90)
@@ -82,7 +82,7 @@ functions = [
         i,
         lambda i=i: calculate_mandelbrot_multithreaded(C, max_iterations, i),
     )
-    for i in range(1, multiprocessing.cpu_count())
+    for i in range(1, int(multiprocessing.cpu_count() / 2 + 1))
 ]
 
 
@@ -91,7 +91,7 @@ threadsBenchmark = benchmark_functions(functions)
 
 
 # Create a line, dot plot of the results
-plt.figure(figsize=(10, 6))
+plt.figure()
 plt.plot(
     [i[0] for i in threadsBenchmark],
     [i[1] for i in threadsBenchmark],
@@ -101,4 +101,33 @@ plt.plot(
 plt.xlabel("Number of threads")
 plt.ylabel("Time (s)")
 plt.title("Execution Time Comparison")
-plt.savefig("figures/computational_speedup.png")
+plt.savefig("figures/computational_speedup_5000x5000.png")
+
+
+# Test multithreading with 1 to 6 threads using a bigger dataset.
+
+h5py_file = h5py.File("data/mandelbrot.hdf5", "r")
+C = h5py_file["C_15000_15000"][:]
+h5py_file.close()
+
+
+functions = [
+    (
+        i,
+        lambda i=i: calculate_mandelbrot_multithreaded(C, max_iterations, i),
+    )
+    for i in range(1, int(multiprocessing.cpu_count() / 2 + 1))
+]
+
+threadsBenchmark_big = benchmark_functions(functions)
+plt.figure()
+plt.plot(
+    [i[0] for i in threadsBenchmark_big],
+    [i[1] for i in threadsBenchmark_big],
+    "o-",
+    color="steelblue",
+)
+plt.xlabel("Number of threads")
+plt.ylabel("Time (s)")
+plt.title("Execution Time Comparison")
+plt.savefig("figures/computational_speedup_15000x15000.png")
