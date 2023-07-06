@@ -2,6 +2,8 @@
 
 This repository contains the code and documentation for calculating the Mandelbrot set as part of the course Scientific Computing using Python – High Performance Computing in Python at Aalborg University. The code is implemented in Python 3.11.3 using anaconda 1.11.2. All code considerations and results can be found at the [assignment](#assignment-the-mandelbrot-set).
 
+The best way to read this repo is at github. Follow the [link](https://github.com/SebastianDall/Scientific_Computing_Mandelbrot.git) to the repo.
+
 ## Installation
 
 All code was developed in a docker container and vscode. To create all the figures and files for running the code, simply run the following command:
